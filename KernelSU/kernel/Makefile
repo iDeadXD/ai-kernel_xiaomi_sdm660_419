@@ -16,7 +16,7 @@ ccflags-y += -I$(objtree)/security/selinux -include $(srctree)/include/uapi/asm-
 
 obj-$(CONFIG_KSU) += kernelsu.o
 
-ccflags-y += -DKSU_VERSION=12055
+ccflags-y += -DKSU_VERSION=12069
 
 ifeq ($(shell grep -q " current_sid(void)" $(srctree)/security/selinux/include/objsec.h; echo $$?),0)
 ccflags-y += -DKSU_COMPAT_HAS_CURRENT_SID
@@ -57,12 +57,12 @@ ifneq ($(shell grep -q "strncpy_from_user_nofault" $(srctree)/include/linux/uacc
 $(error You must backport strncpy_from_user_nofault - https://github.com/backslashxx/KernelSU/issues/4#issue-2818274642 )
 endif
 
-ifneq ($(shell grep -q "ssize_t kernel_read" $(srctree)/fs/read_write.c; echo $$?),0)
-$(error You must backport newer kernel_read https://github.com/backslashxx/KernelSU/issues/4#issue-2818274642 )
+ifeq ($(shell grep -q "ssize_t kernel_read" $(srctree)/fs/read_write.c; echo $$?),0)
+ccflags-y += -DKSU_KERNEL_READ
 endif
 
-ifneq ($(shell grep "ssize_t kernel_write" $(srctree)/fs/read_write.c | grep -q "const void" ; echo $$?),0)
-$(error You must backport newer kernel_write https://github.com/backslashxx/KernelSU/issues/4#issue-2818274642 )
+ifeq ($(shell grep "ssize_t kernel_write" $(srctree)/fs/read_write.c | grep -q "const void" ; echo $$?),0)
+ccflags-y += -DKSU_KERNEL_WRITE
 endif
 
 ccflags-y += -Wno-implicit-function-declaration -Wno-strict-prototypes -Wno-int-conversion -Wno-gcc-compat

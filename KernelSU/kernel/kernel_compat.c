@@ -117,13 +117,31 @@ struct file *ksu_filp_open_compat(const char *filename, int flags, umode_t mode)
 ssize_t ksu_kernel_read_compat(struct file *p, void *buf, size_t count,
 			       loff_t *pos)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0) || defined(KSU_KERNEL_READ)
 	return kernel_read(p, buf, count, pos);
+#else
+	loff_t offset = pos ? *pos : 0;
+	ssize_t result = kernel_read(p, offset, (char *)buf, count);
+	if (pos && result > 0) {
+		*pos = offset + result;
+	}
+	return result;
+#endif
 }
 
 ssize_t ksu_kernel_write_compat(struct file *p, const void *buf, size_t count,
 				loff_t *pos)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0) || defined(KSU_KERNEL_WRITE)
 	return kernel_write(p, buf, count, pos);
+#else
+	loff_t offset = pos ? *pos : 0;
+	ssize_t result = kernel_write(p, buf, count, offset);
+	if (pos && result > 0) {
+		*pos = offset + result;
+	}
+	return result;
+#endif
 }
 
 long ksu_strncpy_from_user_nofault(char *dst, const void __user *unsafe_addr,
