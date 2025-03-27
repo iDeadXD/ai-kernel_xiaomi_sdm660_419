@@ -218,6 +218,10 @@ ifdef CONFIG_ELLIPTICLABS
 	ELLIPTICLABS_OBJS += elliptic/io_modules/userspace/elliptic_data_userspace_ctrl.o
 endif
 
+ifdef CONFIG_AINUR_DTS_HW
+	AINUR_DTS_HW_OBJS += dts_eagle/dts_eagle_drv.o
+endif
+
 LINUX_INC +=	-Iinclude/linux
 
 INCS +=		$(COMMON_INC) \
@@ -289,3 +293,6 @@ q6_notifier_dlkm-y := $(QDSP6_NOTIFIER_OBJS)
 
 obj-$(CONFIG_ELLIPTICLABS) += elliptic_dlkm.o
 elliptic_dlkm-y := $(ELLIPTICLABS_OBJS)
+
+obj-$(CONFIG_AINUR_DTS_HW) += dts_eagle_dlkm.o
+dts_eagle_dlkm-y := $(AINUR_DTS_HW_OBJS)
