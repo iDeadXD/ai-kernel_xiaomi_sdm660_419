@@ -41,6 +41,9 @@
 #include "wcd_cpe_core.h"
 #include <asoc/wcdcal-hwdep.h>
 #include <asoc/wcd-mbhc-v2-api.h>
+#include <linux/proc_fs.h>
+#include <../drivers/base/regmap/internal.h>
+#include <linux/switch.h>
 
 #define DRV_NAME "tasha_codec"
 
@@ -141,6 +144,9 @@ static int cpe_debug_mode = 0;
 #define DAPM_MICBIAS2_STANDALONE "MIC BIAS2 Standalone"
 #define DAPM_MICBIAS3_STANDALONE "MIC BIAS3 Standalone"
 #define DAPM_MICBIAS4_STANDALONE "MIC BIAS4 Standalone"
+
+int g_DebugMode = 1;
+struct switch_dev *g_audiowizard_force_preset_sdev = NULL;
 
 #define DAPM_LDO_H_STANDALONE "LDO_H"
 module_param(cpe_debug_mode, int, 0664);
@@ -14134,6 +14140,21 @@ static int tasha_codec_probe(struct snd_soc_component *component)
 	snd_soc_dapm_disable_pin(dapm, "ANC SPK1 PA");
 	mutex_unlock(&tasha->codec_mutex);
 	snd_soc_dapm_sync(dapm);
+
+	/* ASUS_BSP Paul +++ */
+        if (!g_audiowizard_force_preset_sdev) {
+		g_audiowizard_force_preset_sdev = kzalloc(sizeof(struct switch_dev), GFP_KERNEL);
+		if (!g_audiowizard_force_preset_sdev) {
+			pr_err("%s: failed to allocate switch_dev\n", __func__);
+			ret = -ENOMEM;
+		}
+		g_audiowizard_force_preset_sdev->name = "audiowizard_force_preset";
+		g_audiowizard_force_preset_sdev->state = 0;
+		ret = switch_dev_register(g_audiowizard_force_preset_sdev);
+		if (ret < 0)
+			pr_err("%s: failed to register switch audiowizard_force_preset\n", __func__);
+	}
+	/* ASUS_BSP Paul --- */
 
 	return ret;
 
