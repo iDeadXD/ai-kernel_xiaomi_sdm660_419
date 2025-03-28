@@ -1007,8 +1007,8 @@ static void wcd_mbhc_swch_irq_handler(struct wcd_mbhc *mbhc)
 		mbhc->mbhc_cb->mbhc_micb_ramp_control(component, true);
 
 	/* ASUS_BSP Paul +++ */
-	// if (g_DebugMode)
-	// 	goto done;
+	if (g_DebugMode)
+		goto done;
 	/* ASUS_BSP Paul --- */
 
 	if (mbhc->mbhc_cb->micbias_enable_status)
