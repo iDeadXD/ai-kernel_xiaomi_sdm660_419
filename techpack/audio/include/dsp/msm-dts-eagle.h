@@ -76,7 +76,7 @@ static inline int msm_dts_eagle_enable_adm(int port_id, int copp_idx,
 {
 	return 0;
 }
-static inline void msm_dts_eagle_add_controls(struct snd_soc_platform *platform)
+static inline void msm_dts_eagle_add_controls(struct snd_soc_component *component)
 {
 }
 static inline int msm_dts_eagle_set_stream_gain(struct audio_client *ac,

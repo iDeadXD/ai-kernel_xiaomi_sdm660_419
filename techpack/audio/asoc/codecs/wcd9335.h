@@ -37,6 +37,10 @@
 #define WCD9335_ANC_DMIC_X2_FULL_RATE 1
 #define WCD9335_ANC_DMIC_X2_HALF_RATE 0
 
+/* ASUS_BSP Paul +++ */
+extern int current_wcd_component_id;
+/* ASUS_BSP Paul --- */
+
 /* Number of input and output Slimbus port */
 enum {
 	TASHA_RX0 = 0,

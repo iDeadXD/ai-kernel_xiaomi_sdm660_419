@@ -8382,6 +8382,56 @@ struct asm_stream_cmd_open_transcode_loopback_t {
 
 #define ASM_STREAM_CMD_FLUSH_READBUFS   0x00010C09
 #define ASM_STREAM_CMD_SET_PP_PARAMS_V2 0x00010DA1
+struct asm_stream_cmd_set_pp_params_v2 {
+	u32                  data_payload_addr_lsw;
+/* LSW of parameter data payload address. Supported values: any. */
+	u32                  data_payload_addr_msw;
+/* MSW of Parameter data payload address. Supported values: any.
+ * - Must be set to zero for in-band data.
+ * - In the case of 32 bit Shared memory address, msw  field must be
+ * - set to zero.
+ * - In the case of 36 bit shared memory address, bit 31 to bit 4 of
+ * msw
+ *
+ * - must be set to zero.
+ */
+	u32                  mem_map_handle;
+/* Supported Values: Any.
+* memory map handle returned by DSP through
+* ASM_CMD_SHARED_MEM_MAP_REGIONS
+* command.
+* if mmhandle is NULL, the ParamData payloads are within the
+* message payload (in-band).
+* If mmhandle is non-NULL, the ParamData payloads begin at the
+* address specified in the address msw and lsw (out-of-band).
+*/
+
+	u32                  data_payload_size;
+/* Size in bytes of the variable payload accompanying the
+message, or in shared memory. This field is used for parsing the
+parameter payload. */
+
+} __packed;
+
+struct asm_stream_param_data_v2 {
+	u32                  module_id;
+	/* Unique module ID. */
+
+	u32                  param_id;
+	/* Unique parameter ID. */
+
+	u16                  param_size;
+/* Data size of the param_id/module_id combination. This is
+ * a multiple of 4 bytes.
+ */
+
+	u16                  reserved;
+/* Reserved for future enhancements. This field must be set to
+ * zero.
+ */
+
+} __packed;
+
 #define ASM_STREAM_CMD_SET_PP_PARAMS_V3 0x0001320D
 
 /*
@@ -11665,6 +11715,16 @@ struct srs_trumedia_params {
 #define ASM_STREAM_POSTPROC_TOPO_ID_DTS_HPX 0x00010DED
 #define ASM_STREAM_POSTPROC_TOPO_ID_HPX_PLUS  0x10015000
 #define ASM_STREAM_POSTPROC_TOPO_ID_HPX_MASTER  0x10015001
+struct asm_dts_eagle_param {
+	struct apr_hdr	hdr;
+	struct asm_stream_cmd_set_pp_params_v2 param;
+	struct asm_stream_param_data_v2 data;
+} __packed;
+
+struct asm_dts_eagle_param_get {
+	struct apr_hdr	hdr;
+	struct asm_stream_cmd_get_pp_params_v2 param;
+} __packed;
 
 /* Opcode to set BT address and license for aptx decoder */
 #define APTX_DECODER_BT_ADDRESS 0x00013201
